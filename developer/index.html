@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아이스브레이킹 랜덤 질문 생성기</title>
+  <!-- Designer의 CSS를 직접 연결하거나 삽입 (편의상 통합) -->
+  <link rel="stylesheet" href="../designer/style.css">
+  <style>
+    /* 통합을 위한 추가 스타일 (카테고리 색상 차별화 등) */
+    .office-theme { --accent-color: #74b9ff; }
+    .casual-theme { --accent-color: #fab1a0; }
+    .meeting-theme { --accent-color: #ff8fa3; }
+  </style>
+</head>
+<body class="meeting-theme">
+  <div class="container">
+    <div class="category-tabs" id="tabs">
+      <button data-cat="meeting" class="active">첫 만남</button>
+      <button data-cat="office">오피스</button>
+      <button data-cat="casual">캐주얼</button>
+    </div>
+
+    <div class="card" id="question-card">
+      <p class="question-text fade-in" id="question">
+        질문을 뽑아보세요!
+      </p>
+    </div>
+
+    <button class="generate-btn" id="generate-btn">
+      ✨ 랜덤 질문 뽑기
+    </button>
+  </div>
+
+  <script>
+    const questionsFile = '../content/questions.json';
+    let allQuestions = [];
+    let currentCategory = 'meeting';
+
+    const questionEl = document.getElementById('question');
+    const generateBtn = document.getElementById('generate-btn');
+    const tabs = document.querySelectorAll('#tabs button');
+    const card = document.getElementById('question-card');
+
+    // 데이터 불러오기
+    async function loadQuestions() {
+      try {
+        const response = await fetch(questionsFile);
+        allQuestions = await response.json();
+      } catch (err) {
+        console.error("데이터를 불러오는 중 오류가 발생했습니다.", err);
+        questionEl.innerText = "데이터 로딩 실패 😢";
+      }
+    }
+
+    // 카테고리 변경
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentCategory = tab.dataset.cat;
+        
+        // 배경 테마 변경
+        document.body.className = `${currentCategory}-theme`;
+      });
+    });
+
+    // 질문 뽑기
+    function generateQuestion() {
+      const filtered = allQuestions.filter(q => q.category === currentCategory);
+      if (filtered.length === 0) return;
+
+      const randomIdx = Math.floor(Math.random() * filtered.length);
+      const selected = filtered[randomIdx];
+
+      // 애니메이션 재시작
+      questionEl.classList.remove('fade-in');
+      void questionEl.offsetWidth; // 리플로우 강제 발생
+      questionEl.classList.add('fade-in');
+
+      questionEl.innerText = selected.question;
+    }
+
+    generateBtn.addEventListener('click', generateQuestion);
+
+    // 초기화
+    loadQuestions();
+  </script>
+</body>
+</html>

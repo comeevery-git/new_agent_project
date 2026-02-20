@@ -1,0 +1,9 @@
+PROJECT_SPEC.md
+
+.idea/*
+*.iml
+
+content/AGENTS.md
+designer/AGENTS.md
+developer/AGENTS.md
+planner/AGENTS.md
