@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://comeevery-git.github.io/new_agent_project/sitemap.xml

@@ -24,7 +24,7 @@
   { "id": 23, "consonants": "ㅇㅅㅇ",  "answer": "원숭이",  "hint": "나무를 타는 영리한 동물 🐒" },
   { "id": 24, "consonants": "ㅁㅇㄱ",  "answer": "미역국",  "hint": "생일날 꼭 먹는 국 🎂" },
   { "id": 25, "consonants": "ㅂㄹㄷ",  "answer": "보름달",  "hint": "추석에 보는 크고 둥근 달 🌕" },
-  { "id": 26, "consonants": "ㄱㅊㅈㄱ","answer": "김치찌개","hint": "한국의 대표 찌개 🍲" },
+  { "id": 26, "consonants": "ㄱㅊㅉㄱ","answer": "김치찌개","hint": "한국의 대표 찌개 🍲" },
   { "id": 27, "consonants": "ㅅㄴㄱ",  "answer": "소나기",  "hint": "갑자기 쏟아지는 비 🌧️" },
   { "id": 28, "consonants": "ㅈㅈㄱ",  "answer": "자전거",  "hint": "페달을 밟아서 타는 것 🚲" },
   { "id": 29, "consonants": "ㄷㅂ",    "answer": "두부",    "hint": "콩으로 만든 하얀 식재료 🫘" },
