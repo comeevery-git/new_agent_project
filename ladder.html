@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사다리타기 - 무료 온라인 사다리 게임 | 미니게임 허브</title>
+  <meta name="description" content="누가 당첨될까요? 공평한 온라인 사다리타기로 결정하세요. 이름과 결과를 입력하면 사다리가 자동으로 생성됩니다. 최대 6명까지 가능한 무료 사다리 게임.">
+  <meta name="keywords" content="사다리타기, 온라인사다리, 제비뽑기, 무작위추첨, 사다리게임, 당번정하기, 무료게임, 온라인게임">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="사다리타기 - 무료 온라인 사다리 게임">
+  <meta property="og:description" content="이름과 결과를 입력하면 공평한 사다리가 자동으로 생성됩니다. 최대 6명까지 무료로!">
+  <meta property="og:url" content="https://comeevery-git.github.io/new_agent_project/ladder.html">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="canonical" href="https://comeevery-git.github.io/new_agent_project/ladder.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪜</text></svg>">
+  <link rel="stylesheet" href="designer/style.css">
+</head>
+<body class="ladder-theme">
+
+  <nav class="page-nav">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <span class="page-nav-title">🪜 사다리타기</span>
+    <div class="nav-spacer"></div>
+  </nav>
+
+  <main class="game-page top-align">
+    <div class="ladder-container">
+
+      <!-- 설정 단계 -->
+      <div id="ladder-setup">
+        <h2 class="ladder-title">🪜 사다리타기</h2>
+        <p class="ladder-subtitle">참여자 이름과 결과를 입력하세요</p>
+        <div class="ladder-inputs">
+          <div class="ladder-col-header">
+            <span>👤 참여자</span>
+            <span>🎁 결과</span>
+          </div>
+          <div id="player-rows">
+            <div class="player-row">
+              <input type="text" class="player-input" placeholder="이름 1">
+              <input type="text" class="result-input" placeholder="결과 1">
+            </div>
+            <div class="player-row">
+              <input type="text" class="player-input" placeholder="이름 2">
+              <input type="text" class="result-input" placeholder="결과 2">
+            </div>
+          </div>
+          <button class="add-player-btn" id="add-player-btn">+ 참여자 추가</button>
+        </div>
+        <button class="generate-btn" id="ladder-start-btn">🪜 사다리 타기!</button>
+      </div>
+
+      <!-- 게임 단계 -->
+      <div id="ladder-game" class="hidden">
+        <canvas id="ladder-canvas"></canvas>
+        <div class="ladder-actions">
+          <button class="generate-btn" id="reveal-btn">🎉 결과 공개!</button>
+          <button class="secondary-btn" id="ladder-reset-btn">↩ 다시 설정</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <section class="other-games">
+    <h2>다른 게임도 해보세요</h2>
+    <div class="other-games-list">
+      <a href="icebreaker.html" class="other-game-link"><span>💬</span><span>아이스브레이킹</span></a>
+      <a href="balance.html"    class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
+      <a href="quiz.html"       class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
+    </div>
+  </section>
+
+  <script>
+    const playerRows = document.getElementById('player-rows');
+    const addPlayerBtn = document.getElementById('add-player-btn');
+    let ladderState = {};
+
+    function renumber() {
+      playerRows.querySelectorAll('.player-row').forEach((row, i) => {
+        const pi = row.querySelector('.player-input');
+        const ri = row.querySelector('.result-input');
+        if (!pi.value) pi.placeholder = `이름 ${i + 1}`;
+        if (!ri.value) ri.placeholder = `결과 ${i + 1}`;
+      });
+      addPlayerBtn.disabled = playerRows.children.length >= 6;
+    }
+
+    addPlayerBtn.addEventListener('click', () => {
+      if (playerRows.children.length >= 6) return;
+      const idx = playerRows.children.length + 1;
+      const row = document.createElement('div');
+      row.className = 'player-row';
+      row.innerHTML = `
+        <input type="text" class="player-input" placeholder="이름 ${idx}">
+        <input type="text" class="result-input" placeholder="결과 ${idx}">
+        <button class="remove-row-btn" onclick="this.closest('.player-row').remove(); renumber();">✕</button>
+      `;
+      playerRows.appendChild(row);
+      renumber();
+    });
+
+    document.getElementById('ladder-start-btn').addEventListener('click', startLadder);
+    document.getElementById('reveal-btn').addEventListener('click', revealResults);
+    document.getElementById('ladder-reset-btn').addEventListener('click', resetLadder);
+
+    function startLadder() {
+      const rows = [...playerRows.querySelectorAll('.player-row')];
+      if (rows.length < 2) { alert('최소 2명 이상 입력해주세요!'); return; }
+
+      const players = rows.map((r, i) => r.querySelector('.player-input').value.trim() || `참여자${i + 1}`);
+      const results = rows.map((r, i) => r.querySelector('.result-input').value.trim() || `결과${i + 1}`);
+      const shuffled = [...results].sort(() => Math.random() - 0.5);
+      const n = players.length;
+      const ROWS = 7;
+      const connections = buildConnections(n, ROWS);
+      const paths = calcPaths(n, ROWS, connections);
+
+      ladderState = { players, results: shuffled, connections, paths, n, ROWS };
+
+      document.getElementById('ladder-setup').classList.add('hidden');
+      document.getElementById('ladder-game').classList.remove('hidden');
+      document.getElementById('reveal-btn').style.display = '';
+      const existing = document.getElementById('result-list');
+      if (existing) existing.remove();
+      drawLadder(new Set());
+    }
+
+    function buildConnections(n, ROWS) {
+      const conns = [];
+      for (let row = 0; row < ROWS; row++) {
+        const used = new Set();
+        for (let col = 0; col < n - 1; col++) {
+          if (!used.has(col) && !used.has(col - 1) && Math.random() < 0.45) {
+            conns.push({ row, col });
+            used.add(col);
+            used.add(col + 1);
+          }
+        }
+      }
+      return conns;
+    }
+
+    function calcPaths(n, ROWS, conns) {
+      return Array.from({ length: n }, (_, start) => {
+        let col = start;
+        const steps = [];
+        for (let row = 0; row < ROWS; row++) {
+          const right = conns.find(c => c.row === row && c.col === col);
+          const left  = conns.find(c => c.row === row && c.col === col - 1);
+          if (right)     { steps.push({ row, toCol: col + 1 }); col++; }
+          else if (left) { steps.push({ row, toCol: col - 1 }); col--; }
+        }
+        return { start, end: col, steps };
+      });
+    }
+
+    function drawLadder(highlighted) {
+      const { players, results, connections, paths, n, ROWS } = ladderState;
+      const canvas = document.getElementById('ladder-canvas');
+      const ctx = canvas.getContext('2d');
+
+      const PAD     = 32;
+      const NAME_H  = 44;
+      const ROW_GAP = 38;
+      const RES_H   = 44;
+      const avail   = Math.min(window.innerWidth - 48, 460) - PAD * 2;
+      const COL_GAP = n > 1 ? Math.min(80, avail / (n - 1)) : 80;
+      const W       = COL_GAP * (n - 1) + PAD * 2;
+      const H       = NAME_H + (ROWS + 1) * ROW_GAP + RES_H;
+
+      canvas.width  = W;
+      canvas.height = H;
+      ctx.clearRect(0, 0, W, H);
+
+      const X = col => PAD + col * COL_GAP;
+      const Y = row => NAME_H + (row + 1) * ROW_GAP;
+      const TOP    = NAME_H;
+      const BOTTOM = NAME_H + (ROWS + 1) * ROW_GAP;
+
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+      players.forEach((name, i) => {
+        ctx.font = 'bold 13px Pretendard, sans-serif';
+        ctx.fillStyle = highlighted.has(i) ? '#6c5ce7' : '#2d3436';
+        ctx.fillText(clip(name, 4), X(i), NAME_H / 2);
+      });
+
+      const revealed = highlighted.size > 0;
+      results.forEach((res, i) => {
+        ctx.font = 'bold 13px Pretendard, sans-serif';
+        ctx.fillStyle = revealed ? '#6c5ce7' : '#b2bec3';
+        ctx.fillText(revealed ? clip(res, 4) : '?', X(i), BOTTOM + RES_H / 2);
+      });
+
+      ctx.strokeStyle = '#ddd'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+      players.forEach((_, i) => {
+        ctx.beginPath(); ctx.moveTo(X(i), TOP); ctx.lineTo(X(i), BOTTOM); ctx.stroke();
+      });
+
+      connections.forEach(({ row, col }) => {
+        ctx.strokeStyle = '#ccc'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(X(col), Y(row)); ctx.lineTo(X(col + 1), Y(row)); ctx.stroke();
+      });
+
+      highlighted.forEach(idx => {
+        const path = paths[idx];
+        const moveMap = {};
+        path.steps.forEach(s => { moveMap[s.row] = s.toCol; });
+
+        ctx.strokeStyle = '#6c5ce7'; ctx.lineWidth = 5;
+        ctx.shadowColor = 'rgba(108,92,231,0.4)'; ctx.shadowBlur = 10;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+        let col = path.start;
+        ctx.beginPath(); ctx.moveTo(X(col), TOP);
+        for (let row = 0; row < ROWS; row++) {
+          ctx.lineTo(X(col), Y(row));
+          if (moveMap[row] !== undefined) { col = moveMap[row]; ctx.lineTo(X(col), Y(row)); }
+        }
+        ctx.lineTo(X(col), BOTTOM); ctx.stroke();
+        ctx.shadowBlur = 0;
+      });
+    }
+
+    function revealResults() {
+      const all = new Set(ladderState.players.map((_, i) => i));
+      drawLadder(all);
+      document.getElementById('reveal-btn').style.display = 'none';
+
+      const list = document.createElement('div');
+      list.id = 'result-list';
+      list.className = 'result-list fade-in';
+      ladderState.paths.forEach(p => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+          <span class="result-player">${ladderState.players[p.start]}</span>
+          <span class="result-arrow">→</span>
+          <span class="result-value">${ladderState.results[p.end]}</span>
+        `;
+        list.appendChild(item);
+      });
+      document.getElementById('ladder-game').appendChild(list);
+    }
+
+    function resetLadder() {
+      document.getElementById('ladder-setup').classList.remove('hidden');
+      document.getElementById('ladder-game').classList.add('hidden');
+      const rl = document.getElementById('result-list');
+      if (rl) rl.remove();
+    }
+
+    function clip(str, max) {
+      return str.length > max ? str.slice(0, max) + '..' : str;
+    }
+  </script>
+</body>
+</html>

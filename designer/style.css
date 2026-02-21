@@ -596,6 +596,203 @@ body {
 .balance-theme { --accent-color: #00b894; }
 .quiz-theme    { --accent-color: #e17055; }
 
+/* ==================== 홈 페이지 ==================== */
+.home-theme { --accent-color: #ff8fa3; }
+
+.home-header {
+  padding: 48px 20px 28px;
+  text-align: center;
+}
+
+.home-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.home-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  word-break: keep-all;
+}
+
+.home-main {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+.games-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.home-game-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 20px;
+  text-decoration: none;
+  color: var(--text-main);
+  box-shadow: var(--shadow);
+  border-left: 5px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.home-game-card.card-icebreaker { border-left-color: #ff8fa3; }
+.home-game-card.card-balance    { border-left-color: #00b894; }
+.home-game-card.card-quiz       { border-left-color: #e17055; }
+.home-game-card.card-ladder     { border-left-color: #6c5ce7; }
+
+.home-game-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.home-game-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.home-game-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.about-section {
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.about-section h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.about-section p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.home-footer {
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.home-footer a {
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
+/* ==================== 게임 페이지 공통 ==================== */
+.page-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--bg-secondary);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.back-btn {
+  text-decoration: none;
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.back-btn:hover { background: rgba(0, 0, 0, 0.08); }
+
+.page-nav-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.nav-spacer { width: 70px; }
+
+.game-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+.game-page.top-align {
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.other-games {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+.other-games h2 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  padding-left: 4px;
+}
+
+.other-games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.other-game-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.92rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s;
+}
+
+.other-game-link:hover { transform: translateX(4px); }
+.other-game-link span:first-child { font-size: 1.4rem; }
+
+/* ==================== 유틸리티 ==================== */
+.hidden { display: none !important; }
+
 /* ==================== 애니메이션 ==================== */
 .fade-in {
   animation: fadeIn 0.5s ease;

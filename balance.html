@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>밸런스 게임 - 둘 중 하나만 골라야 한다면? | 미니게임 허브</title>
+  <meta name="description" content="여름 vs 겨울? 치킨 vs 피자? 재미있는 밸런스 게임으로 친구들과 서로의 취향을 알아보세요. 25가지 일상 딜레마 질문. 설치 없이 무료로 바로 플레이!">
+  <meta name="keywords" content="밸런스게임, 이거저거, 취향게임, 선택게임, 딜레마게임, 친구게임, 모임게임, 무료게임, 온라인게임">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="밸런스 게임 - 둘 중 하나만 골라야 한다면?">
+  <meta property="og:description" content="여름 vs 겨울? 치킨 vs 피자? 재미있는 밸런스 게임으로 서로의 취향을 알아보세요!">
+  <meta property="og:url" content="https://comeevery-git.github.io/new_agent_project/balance.html">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="canonical" href="https://comeevery-git.github.io/new_agent_project/balance.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+  <link rel="stylesheet" href="designer/style.css">
+</head>
+<body class="balance-theme">
+
+  <nav class="page-nav">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <span class="page-nav-title">⚖️ 밸런스 게임</span>
+    <div class="nav-spacer"></div>
+  </nav>
+
+  <main class="game-page">
+    <div class="container">
+      <div class="balance-progress" id="balance-progress">1 / 25</div>
+      <div class="balance-cards">
+        <div class="balance-card" id="balance-a">A</div>
+        <div class="balance-vs">VS</div>
+        <div class="balance-card" id="balance-b">B</div>
+      </div>
+      <button class="generate-btn" id="balance-next">다음 질문 →</button>
+    </div>
+  </main>
+
+  <section class="other-games">
+    <h2>다른 게임도 해보세요</h2>
+    <div class="other-games-list">
+      <a href="icebreaker.html" class="other-game-link"><span>💬</span><span>아이스브레이킹</span></a>
+      <a href="quiz.html"       class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
+      <a href="ladder.html"     class="other-game-link"><span>🪜</span><span>사다리타기</span></a>
+    </div>
+  </section>
+
+  <script>
+    let questions = [];
+    let queue = [];
+    let current = 0;
+
+    async function load() {
+      try {
+        const res = await fetch('content/balance.json');
+        questions = await res.json();
+        queue = [...questions].sort(() => Math.random() - 0.5);
+        show();
+      } catch (e) { console.error('balance.json 로딩 실패', e); }
+    }
+
+    function show() {
+      if (current >= queue.length) {
+        current = 0;
+        queue = [...queue].sort(() => Math.random() - 0.5);
+      }
+      const q = queue[current];
+      document.getElementById('balance-a').textContent = q.a;
+      document.getElementById('balance-b').textContent = q.b;
+      document.getElementById('balance-a').classList.remove('selected');
+      document.getElementById('balance-b').classList.remove('selected');
+      document.getElementById('balance-progress').textContent = `${current + 1} / ${queue.length}`;
+    }
+
+    document.getElementById('balance-a').addEventListener('click', function () {
+      document.getElementById('balance-b').classList.remove('selected');
+      this.classList.toggle('selected');
+    });
+    document.getElementById('balance-b').addEventListener('click', function () {
+      document.getElementById('balance-a').classList.remove('selected');
+      this.classList.toggle('selected');
+    });
+    document.getElementById('balance-next').addEventListener('click', () => { current++; show(); });
+
+    load();
+  </script>
+</body>
+</html>

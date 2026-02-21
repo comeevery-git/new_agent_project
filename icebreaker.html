@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아이스브레이킹 랜덤 질문 게임 - 어색한 분위기 깨기 | 미니게임 허브</title>
+  <meta name="description" content="랜덤 질문으로 어색한 분위기를 깨보세요! 첫 만남, 오피스, 캐주얼 카테고리의 재미있는 질문들. 모임, 회식, 소개팅 어디서든 바로 사용 가능한 무료 아이스브레이킹 게임.">
+  <meta name="keywords" content="아이스브레이킹, 랜덤질문, 분위기깨기, 첫만남게임, 모임게임, 소개팅게임, 팀빌딩, 회식게임, 무료게임">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="아이스브레이킹 랜덤 질문 - 어색한 분위기 깨기">
+  <meta property="og:description" content="랜덤 질문으로 어색한 분위기를 깨보세요! 첫 만남, 오피스, 캐주얼 카테고리 제공.">
+  <meta property="og:url" content="https://comeevery-git.github.io/new_agent_project/icebreaker.html">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="canonical" href="https://comeevery-git.github.io/new_agent_project/icebreaker.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+  <link rel="stylesheet" href="designer/style.css">
+</head>
+<body class="meeting-theme">
+
+  <nav class="page-nav">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <span class="page-nav-title">💬 아이스브레이킹</span>
+    <div class="nav-spacer"></div>
+  </nav>
+
+  <main class="game-page">
+    <div class="container">
+      <div class="category-tabs" id="tabs">
+        <button data-cat="meeting" class="active">첫 만남</button>
+        <button data-cat="office">오피스</button>
+        <button data-cat="casual">캐주얼</button>
+      </div>
+      <div class="card" id="question-card">
+        <p class="question-text fade-in" id="question">질문을 뽑아보세요!</p>
+      </div>
+      <button class="generate-btn" id="generate-btn">✨ 랜덤 질문 뽑기</button>
+    </div>
+  </main>
+
+  <section class="other-games">
+    <h2>다른 게임도 해보세요</h2>
+    <div class="other-games-list">
+      <a href="balance.html" class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
+      <a href="quiz.html"    class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
+      <a href="ladder.html"  class="other-game-link"><span>🪜</span><span>사다리타기</span></a>
+    </div>
+  </section>
+
+  <script>
+    let allQuestions = [];
+    let currentCategory = 'meeting';
+    const questionEl = document.getElementById('question');
+
+    async function loadQuestions() {
+      try {
+        const res = await fetch('content/questions.json');
+        allQuestions = await res.json();
+      } catch (e) {
+        questionEl.innerText = '데이터 로딩 실패 😢';
+      }
+    }
+
+    document.querySelectorAll('#tabs button').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#tabs button').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentCategory = tab.dataset.cat;
+        const map = { meeting: 'meeting-theme', office: 'office-theme', casual: 'casual-theme' };
+        document.body.className = map[currentCategory];
+      });
+    });
+
+    document.getElementById('generate-btn').addEventListener('click', () => {
+      const pool = allQuestions.filter(q => q.category === currentCategory);
+      if (!pool.length) return;
+      const q = pool[Math.floor(Math.random() * pool.length)];
+      questionEl.classList.remove('fade-in');
+      void questionEl.offsetWidth;
+      questionEl.classList.add('fade-in');
+      questionEl.innerText = q.question;
+    });
+
+    loadQuestions();
+  </script>
+</body>
+</html>

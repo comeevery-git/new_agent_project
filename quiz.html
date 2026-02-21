@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>초성 퀴즈 - 초성만 보고 단어 맞추기 | 미니게임 허브</title>
+  <meta name="description" content="ㅊㅋ는 무슨 단어일까요? 10초 안에 초성만 보고 단어를 맞춰보세요! 25가지 문제와 힌트 제공. 혼자서도 친구들과도 즐길 수 있는 무료 초성 퀴즈 게임.">
+  <meta name="keywords" content="초성퀴즈, 초성게임, 초성맞추기, 낱말퀴즈, 단어맞추기, 퀴즈게임, 무료퀴즈, 온라인퀴즈, 한글게임">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="초성 퀴즈 - 초성만 보고 단어 맞추기">
+  <meta property="og:description" content="ㅊㅋ는 무슨 단어일까요? 10초 안에 초성만 보고 단어를 맞춰보세요!">
+  <meta property="og:url" content="https://comeevery-git.github.io/new_agent_project/quiz.html">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="canonical" href="https://comeevery-git.github.io/new_agent_project/quiz.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔤</text></svg>">
+  <link rel="stylesheet" href="designer/style.css">
+</head>
+<body class="quiz-theme">
+
+  <nav class="page-nav">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <span class="page-nav-title">🔤 초성 퀴즈</span>
+    <div class="nav-spacer"></div>
+  </nav>
+
+  <main class="game-page">
+    <div class="container">
+      <div class="quiz-progress" id="quiz-progress">1 / 25</div>
+      <div class="quiz-card">
+        <div class="quiz-consonants" id="quiz-consonants">ㅊㅋ</div>
+        <div class="quiz-timer-bar">
+          <div class="quiz-timer-fill" id="quiz-timer-fill"></div>
+        </div>
+        <div class="quiz-hint hidden" id="quiz-hint"></div>
+        <div class="quiz-answer hidden" id="quiz-answer"></div>
+      </div>
+      <div class="quiz-actions" id="quiz-actions">
+        <button class="secondary-btn" id="quiz-hint-btn">💡 힌트</button>
+        <button class="generate-btn" id="quiz-reveal-btn">정답 보기</button>
+      </div>
+      <button class="generate-btn hidden" id="quiz-next-btn">다음 문제 →</button>
+    </div>
+  </main>
+
+  <section class="other-games">
+    <h2>다른 게임도 해보세요</h2>
+    <div class="other-games-list">
+      <a href="icebreaker.html" class="other-game-link"><span>💬</span><span>아이스브레이킹</span></a>
+      <a href="balance.html"    class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
+      <a href="ladder.html"     class="other-game-link"><span>🪜</span><span>사다리타기</span></a>
+    </div>
+  </section>
+
+  <script>
+    let questions = [];
+    let queue = [];
+    let current = 0;
+    let timer = null;
+    let timeLeft = 10;
+    const TOTAL_TIME = 10;
+
+    async function load() {
+      try {
+        const res = await fetch('content/consonants.json');
+        questions = await res.json();
+        queue = [...questions].sort(() => Math.random() - 0.5);
+        show();
+      } catch (e) { console.error('consonants.json 로딩 실패', e); }
+    }
+
+    function show() {
+      if (current >= queue.length) {
+        current = 0;
+        queue = [...queue].sort(() => Math.random() - 0.5);
+      }
+      const q = queue[current];
+      document.getElementById('quiz-consonants').textContent = q.consonants;
+      document.getElementById('quiz-hint').textContent = q.hint;
+      document.getElementById('quiz-hint').classList.add('hidden');
+      document.getElementById('quiz-answer').textContent = q.answer;
+      document.getElementById('quiz-answer').classList.add('hidden');
+      document.getElementById('quiz-actions').classList.remove('hidden');
+      document.getElementById('quiz-next-btn').classList.add('hidden');
+      document.getElementById('quiz-progress').textContent = `${current + 1} / ${queue.length}`;
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = TOTAL_TIME;
+      updateBar();
+      timer = setInterval(() => {
+        timeLeft -= 0.1;
+        updateBar();
+        if (timeLeft <= 0) reveal();
+      }, 100);
+    }
+
+    function updateBar() {
+      document.getElementById('quiz-timer-fill').style.width = Math.max(0, timeLeft / TOTAL_TIME * 100) + '%';
+    }
+
+    function reveal() {
+      clearInterval(timer);
+      document.getElementById('quiz-timer-fill').style.width = '0%';
+      document.getElementById('quiz-answer').classList.remove('hidden');
+      document.getElementById('quiz-actions').classList.add('hidden');
+      document.getElementById('quiz-next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('quiz-hint-btn').addEventListener('click', () => {
+      document.getElementById('quiz-hint').classList.remove('hidden');
+    });
+    document.getElementById('quiz-reveal-btn').addEventListener('click', reveal);
+    document.getElementById('quiz-next-btn').addEventListener('click', () => { current++; show(); });
+
+    load();
+  </script>
+</body>
+</html>
