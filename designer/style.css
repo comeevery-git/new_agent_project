@@ -595,6 +595,8 @@ body {
 .ladder-theme  { --accent-color: #6c5ce7; }
 .balance-theme { --accent-color: #00b894; }
 .quiz-theme    { --accent-color: #e17055; }
+.capital-theme { --accent-color: #0984e3; }
+.nunchi-theme  { --accent-color: #e84393; }
 
 /* ==================== 홈 페이지 ==================== */
 .home-theme { --accent-color: #ff8fa3; }
@@ -653,6 +655,8 @@ body {
 .home-game-card.card-balance    { border-left-color: #00b894; }
 .home-game-card.card-quiz       { border-left-color: #e17055; }
 .home-game-card.card-ladder     { border-left-color: #6c5ce7; }
+.home-game-card.card-capital    { border-left-color: #0984e3; }
+.home-game-card.card-nunchi     { border-left-color: #e84393; }
 
 .home-game-icon {
   font-size: 2.5rem;
@@ -881,48 +885,50 @@ body {
 
 /* ==================== 상황 활용 섹션 ==================== */
 .situations-section {
-  padding: 28px 20px 4px;
+  padding: 28px 20px 8px;
   max-width: 520px;
   margin: 0 auto;
   width: 100%;
 }
 
 .situations-section h2 {
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-bottom: 12px;
   text-transform: uppercase;
 }
 
+/* chip/pill 스타일 — 버튼처럼 보이지 않는 정보 태그 */
 .situations-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .situation-card {
-  background: var(--bg-secondary);
-  border-radius: 14px;
-  padding: 13px 15px;
-  display: flex;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 100px;
+  padding: 7px 14px 7px 10px;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  gap: 6px;
+  /* no box-shadow, no border, cursor default */
+  cursor: default;
+  user-select: none;
 }
 
 .situation-card .sit-icon {
-  font-size: 1.5rem;
+  font-size: 1rem;
   line-height: 1;
-  flex-shrink: 0;
 }
 
 .situation-card .sit-text {
-  font-size: 0.87rem;
-  font-weight: 600;
-  color: var(--text-main);
-  line-height: 1.35;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1;
 }
 
 /* ==================== 홈 rotating text ==================== */
@@ -937,6 +943,101 @@ body {
 
 .home-rotating-text.fade-out {
   opacity: 0;
+}
+
+/* ==================== 눈치게임 ==================== */
+.nunchi-number-display {
+  font-size: 6rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  line-height: 1;
+  margin: 12px 0 8px;
+  transition: transform 0.12s ease, color 0.2s;
+  display: block;
+  text-align: center;
+}
+
+.nunchi-number-display.pop {
+  animation: nunchiPop 0.25s ease;
+}
+
+@keyframes nunchiPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+.nunchi-status {
+  min-height: 1.5em;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.nunchi-zones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.nunchi-zone {
+  flex: 1 1 calc(50% - 4px);
+  min-height: 110px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.1s, opacity 0.4s;
+  font-weight: 700;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+  gap: 4px;
+}
+
+.nunchi-zone:active:not(.eliminated) {
+  transform: scale(0.94);
+}
+
+.nunchi-zone.eliminated {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.nunchi-zone .zone-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.nunchi-zone .zone-claimed {
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.nunchi-zone .zone-tap-hint {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.nunchi-out-badge {
+  position: absolute;
+  font-size: 1.6rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.nunchi-zone.eliminated .nunchi-out-badge {
+  opacity: 1;
 }
 
 /* ==================== 애니메이션 ==================== */

@@ -37,6 +37,7 @@
   </script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪜</text></svg>">
   <link rel="stylesheet" href="designer/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
 </head>
 <body class="ladder-theme">
 
@@ -85,7 +86,7 @@
     </div>
   </main>
 
-  <section class="situations-section">
+  <section class="situations-section" data-aos="fade-up">
     <h2>이런 상황에서 활용해보세요</h2>
     <div class="situations-grid">
       <div class="situation-card"><span class="sit-icon">🍕</span><span class="sit-text">메뉴 결정 못할 때</span></div>
@@ -95,17 +96,18 @@
     </div>
   </section>
 
-  <section class="other-games">
+  <section class="other-games" data-aos="fade-up">
     <h2>다른 게임도 해보세요</h2>
     <div class="other-games-list">
       <a href="icebreaker.html" class="other-game-link"><span>💬</span><span>아이스브레이킹</span></a>
-      <a href="balance.html"    class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
-      <a href="quiz.html"       class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
+      <a href="nunchi.html"     class="other-game-link"><span>🤫</span><span>눈치게임</span></a>
+      <a href="capital.html"    class="other-game-link"><span>🌍</span><span>수도 맞추기</span></a>
     </div>
   </section>
 
   <div class="toast" id="toast">🔗 링크가 복사되었어요!</div>
 
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
     const playerRows = document.getElementById('player-rows');
     const addPlayerBtn = document.getElementById('add-player-btn');
@@ -289,6 +291,8 @@
     function clip(str, max) {
       return str.length > max ? str.slice(0, max) + '..' : str;
     }
+
+    AOS.init({ once: true, duration: 500, offset: 40 });
 
     document.getElementById('share-btn').addEventListener('click', () => {
       navigator.clipboard.writeText(window.location.href).then(() => {

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>눈치게임 - 동시에 누르면 탈락! | 미니게임 허브</title>
+  <meta name="description" content="순서 없이 숫자를 외쳐라! 동시에 누르면 둘 다 탈락. 마지막에 살아남은 사람이 눈치왕! 2~6명이 한 기기로 즐기는 눈치게임.">
+  <meta name="keywords" content="눈치게임, 눈치왕, 파티게임, 모임게임, 동시탭, 반응게임, 무료게임">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="눈치게임 - 동시에 누르면 탈락!">
+  <meta property="og:description" content="순서 없이 숫자를 외쳐라! 동시에 누르면 탈락. 마지막 생존자가 눈치왕!">
+  <meta property="og:url" content="https://comeevery-git.github.io/new_agent_project/nunchi.html">
+  <meta property="og:locale" content="ko_KR">
+  <link rel="canonical" href="https://comeevery-git.github.io/new_agent_project/nunchi.html">
+  <meta property="og:image" content="https://comeevery-git.github.io/new_agent_project/og-image.jpg">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="800">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:alt" content="미니게임 허브 마스코트">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="눈치게임 - 동시에 누르면 탈락!">
+  <meta name="twitter:description" content="순서 없이 숫자를 외쳐라! 동시에 누르면 탈락. 마지막 생존자가 눈치왕!">
+  <meta name="twitter:image" content="https://comeevery-git.github.io/new_agent_project/og-image.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "눈치게임",
+    "description": "동시에 누르면 탈락! 마지막 생존자가 눈치왕이 되는 파티 게임.",
+    "url": "https://comeevery-git.github.io/new_agent_project/nunchi.html",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web Browser",
+    "inLanguage": "ko-KR",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" }
+  }
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤫</text></svg>">
+  <link rel="stylesheet" href="designer/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+  <style>
+    .nunchi-setup-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .nunchi-setup-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .nunchi-player-count {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .nunchi-count-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.12);
+      background: var(--bg-secondary);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .nunchi-count-btn.active {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      color: #fff;
+    }
+    .nunchi-name-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .nunchi-name-inputs input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      background: var(--bg-secondary);
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .nunchi-name-inputs input:focus {
+      border-color: var(--accent-color);
+    }
+    .nunchi-round-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .nunchi-result-screen {
+      text-align: center;
+      padding: 10px 0 20px;
+    }
+    .nunchi-result-emoji { font-size: 4rem; margin-bottom: 12px; }
+    .nunchi-result-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
+    .nunchi-result-sub   { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+    .nunchi-collision-msg {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: #e17055;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nunchi-collision-msg.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .nunchi-game-header {
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .nunchi-round-info {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body class="nunchi-theme">
+
+  <nav class="page-nav">
+    <a href="index.html" class="back-btn">← 홈</a>
+    <span class="page-nav-title">🤫 눈치게임</span>
+    <button class="share-btn" id="share-btn">🔗 공유</button>
+  </nav>
+
+  <main class="game-page top-align">
+    <div class="container">
+
+      <!-- 설정 화면 -->
+      <div id="nunchi-setup">
+        <p class="nunchi-setup-title">🤫 눈치게임</p>
+        <p class="nunchi-setup-sub">순서 없이 숫자를 눌러라!<br>동시에 누르면 둘 다 탈락 — 눈치왕이 되어라</p>
+
+        <p class="nunchi-round-label">인원 수</p>
+        <div class="nunchi-player-count" id="count-btns">
+          <button class="nunchi-count-btn" data-n="2">2</button>
+          <button class="nunchi-count-btn active" data-n="3">3</button>
+          <button class="nunchi-count-btn" data-n="4">4</button>
+          <button class="nunchi-count-btn" data-n="5">5</button>
+          <button class="nunchi-count-btn" data-n="6">6</button>
+        </div>
+
+        <div class="nunchi-name-inputs" id="name-inputs"></div>
+
+        <button class="generate-btn" id="nunchi-start-btn">🎮 게임 시작!</button>
+      </div>
+
+      <!-- 게임 화면 -->
+      <div id="nunchi-game" class="hidden">
+        <div class="nunchi-game-header">
+          <div class="nunchi-round-info" id="nunchi-survivors"></div>
+          <span class="nunchi-number-display" id="nunchi-number">1</span>
+          <div class="nunchi-status" id="nunchi-status">버튼을 눌러 이 숫자를 선점하세요!</div>
+        </div>
+        <div class="nunchi-zones" id="nunchi-zones"></div>
+      </div>
+
+      <!-- 결과 화면 -->
+      <div id="nunchi-result" class="nunchi-result-screen hidden">
+        <div class="nunchi-result-emoji" id="nunchi-res-emoji">👑</div>
+        <div class="nunchi-result-title" id="nunchi-res-title">눈치왕!</div>
+        <div class="nunchi-result-sub" id="nunchi-res-sub"></div>
+        <button class="generate-btn" id="nunchi-retry-btn">🔄 다시 하기</button>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="nunchi-collision-msg" id="collision-msg"></div>
+
+  <section class="situations-section" data-aos="fade-up">
+    <h2>이런 상황에서 활용해보세요</h2>
+    <div class="situations-grid">
+      <div class="situation-card"><span class="sit-icon">🍺</span><span class="sit-text">술자리 벌칙 정하기</span></div>
+      <div class="situation-card"><span class="sit-icon">🏕️</span><span class="sit-text">캠프 &amp; 여행</span></div>
+      <div class="situation-card"><span class="sit-icon">🎉</span><span class="sit-text">파티 게임</span></div>
+      <div class="situation-card"><span class="sit-icon">👨‍👩‍👧</span><span class="sit-text">모임 분위기 메이커</span></div>
+    </div>
+  </section>
+
+  <section class="other-games" data-aos="fade-up">
+    <h2>다른 게임도 해보세요</h2>
+    <div class="other-games-list">
+      <a href="ladder.html"    class="other-game-link"><span>🪜</span><span>사다리타기</span></a>
+      <a href="balance.html"   class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
+      <a href="capital.html"   class="other-game-link"><span>🌍</span><span>수도 맞추기</span></a>
+    </div>
+  </section>
+  <footer class="home-footer">
+    <p>© 2025 미니게임 허브 · <a href="privacy.html">개인정보처리방침</a></p>
+  </footer>
+
+  <div class="toast" id="toast">🔗 링크가 복사되었어요!</div>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ once: true, duration: 500, offset: 40 });
+
+    const COLORS = ['#e84393','#0984e3','#00b894','#e17055','#6c5ce7','#f9ca24'];
+    const SIMULTANEOUS_MS = 320;
+    const DEFAULT_NAMES = ['플레이어 1','플레이어 2','플레이어 3','플레이어 4','플레이어 5','플레이어 6'];
+
+    let playerCount = 3;
+    let players = [];
+    let eliminated = new Set();
+    let currentNumber = 1;
+    let tapsThisRound = [];
+    let resolveTimer = null;
+    let roundActive = false;
+
+    // ----- 설정 화면 -----
+    const countBtns = document.querySelectorAll('.nunchi-count-btn');
+    countBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        countBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        playerCount = parseInt(btn.dataset.n);
+        renderNameInputs();
+      });
+    });
+
+    function renderNameInputs() {
+      const container = document.getElementById('name-inputs');
+      container.innerHTML = '';
+      for (let i = 0; i < playerCount; i++) {
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.placeholder = DEFAULT_NAMES[i];
+        inp.style.borderLeftColor = COLORS[i];
+        inp.style.borderLeftWidth = '4px';
+        container.appendChild(inp);
+      }
+    }
+    renderNameInputs();
+
+    document.getElementById('nunchi-start-btn').addEventListener('click', () => {
+      const inputs = document.querySelectorAll('#name-inputs input');
+      players = Array.from(inputs).map((inp, i) =>
+        inp.value.trim() || DEFAULT_NAMES[i]
+      );
+      startGame();
+    });
+
+    // ----- 게임 로직 -----
+    function startGame() {
+      eliminated = new Set();
+      currentNumber = 1;
+      tapsThisRound = [];
+      resolveTimer = null;
+      roundActive = true;
+
+      document.getElementById('nunchi-setup').classList.add('hidden');
+      document.getElementById('nunchi-result').classList.add('hidden');
+      document.getElementById('nunchi-game').classList.remove('hidden');
+
+      renderZones();
+      updateDisplay();
+    }
+
+    function renderZones() {
+      const container = document.getElementById('nunchi-zones');
+      container.innerHTML = '';
+      players.forEach((name, i) => {
+        const zone = document.createElement('div');
+        zone.className = 'nunchi-zone';
+        zone.id = `zone-${i}`;
+        zone.style.background = COLORS[i];
+        zone.innerHTML = `
+          <span class="zone-name">${name}</span>
+          <span class="zone-claimed" id="zone-claimed-${i}"></span>
+          <span class="zone-tap-hint">탭!</span>
+          <span class="nunchi-out-badge">💀</span>
+        `;
+        zone.addEventListener('click', () => onZoneTap(i));
+        zone.addEventListener('touchstart', (e) => { e.preventDefault(); onZoneTap(i); }, { passive: false });
+        container.appendChild(zone);
+      });
+    }
+
+    function updateDisplay() {
+      document.getElementById('nunchi-number').textContent = currentNumber;
+      const alive = players.length - eliminated.size;
+      document.getElementById('nunchi-survivors').textContent = `생존자 ${alive}명`;
+      document.getElementById('nunchi-status').textContent = '버튼을 눌러 이 숫자를 선점하세요!';
+    }
+
+    function onZoneTap(idx) {
+      if (!roundActive) return;
+      if (eliminated.has(idx)) return;
+      if (tapsThisRound.includes(idx)) return;
+
+      tapsThisRound.push(idx);
+
+      // 탭 시각 피드백
+      const zone = document.getElementById(`zone-${idx}`);
+      zone.style.transform = 'scale(0.93)';
+      setTimeout(() => { zone.style.transform = ''; }, 100);
+
+      if (!resolveTimer) {
+        resolveTimer = setTimeout(resolveRound, SIMULTANEOUS_MS);
+      }
+    }
+
+    function resolveRound() {
+      roundActive = false;
+      resolveTimer = null;
+      const taps = [...tapsThisRound];
+      tapsThisRound = [];
+
+      if (taps.length === 0) {
+        roundActive = true;
+        return;
+      }
+
+      if (taps.length === 1) {
+        // 단독 선점
+        const winner = taps[0];
+        const zone = document.getElementById(`zone-${winner}`);
+        document.getElementById(`zone-claimed-${winner}`).textContent = currentNumber;
+        numberPop();
+        document.getElementById('nunchi-status').textContent =
+          `${players[winner]} 님이 ${currentNumber} 선점! 👏`;
+        currentNumber++;
+
+        setTimeout(() => {
+          updateDisplay();
+          roundActive = true;
+        }, 700);
+
+      } else {
+        // 동시 탭 → 탈락
+        taps.forEach(idx => eliminated.add(idx));
+        const names = taps.map(i => players[i]).join(', ');
+        showCollision(`${names} 탈락! 💀`);
+
+        taps.forEach(idx => {
+          document.getElementById(`zone-${idx}`).classList.add('eliminated');
+        });
+
+        const alive = players.length - eliminated.size;
+        setTimeout(() => {
+          if (alive <= 1) {
+            endGame();
+          } else {
+            document.getElementById('nunchi-survivors').textContent = `생존자 ${alive}명`;
+            document.getElementById('nunchi-status').textContent = '계속하세요!';
+            roundActive = true;
+          }
+        }, 1400);
+      }
+    }
+
+    function numberPop() {
+      const el = document.getElementById('nunchi-number');
+      el.classList.remove('pop');
+      void el.offsetWidth;
+      el.classList.add('pop');
+    }
+
+    function showCollision(msg) {
+      const el = document.getElementById('collision-msg');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1300);
+    }
+
+    function endGame() {
+      document.getElementById('nunchi-game').classList.add('hidden');
+      document.getElementById('nunchi-result').classList.remove('hidden');
+
+      const survivors = players.filter((_, i) => !eliminated.has(i));
+      const el_emoji = document.getElementById('nunchi-res-emoji');
+      const el_title = document.getElementById('nunchi-res-title');
+      const el_sub   = document.getElementById('nunchi-res-sub');
+
+      if (survivors.length === 1) {
+        el_emoji.textContent = '👑';
+        el_title.textContent = `${survivors[0]} 님이 눈치왕!`;
+        el_sub.textContent = `${currentNumber - 1}번까지 살아남았어요!`;
+      } else if (survivors.length === 0) {
+        el_emoji.textContent = '💥';
+        el_title.textContent = '전원 탈락!';
+        el_sub.textContent = '모두 함께 탈락했어요. 다시 도전!';
+      } else {
+        el_emoji.textContent = '🤝';
+        el_title.textContent = `공동 눈치왕!`;
+        el_sub.textContent = `${survivors.join(', ')} 님이 함께 살아남았어요!`;
+      }
+    }
+
+    document.getElementById('nunchi-retry-btn').addEventListener('click', () => {
+      document.getElementById('nunchi-result').classList.add('hidden');
+      document.getElementById('nunchi-setup').classList.remove('hidden');
+    });
+
+    document.getElementById('share-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+      });
+    });
+  </script>
+</body>
+</html>
