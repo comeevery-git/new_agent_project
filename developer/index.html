@@ -39,6 +39,20 @@
             <div class="game-card-desc">공평한 사다리 게임</div>
           </div>
         </div>
+        <div class="game-card" data-game="balance">
+          <div class="game-card-icon">⚖️</div>
+          <div class="game-card-info">
+            <div class="game-card-name">밸런스 게임</div>
+            <div class="game-card-desc">둘 중 하나만 골라야 한다면?</div>
+          </div>
+        </div>
+        <div class="game-card" data-game="quiz">
+          <div class="game-card-icon">🔤</div>
+          <div class="game-card-info">
+            <div class="game-card-name">초성 퀴즈</div>
+            <div class="game-card-desc">초성만 보고 단어 맞추기</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -55,6 +69,37 @@
         <p class="question-text fade-in" id="question">질문을 뽑아보세요!</p>
       </div>
       <button class="generate-btn" id="generate-btn">✨ 랜덤 질문 뽑기</button>
+    </div>
+  </div>
+
+  <!-- ===== 밸런스 게임 뷰 ===== -->
+  <div class="game-view hidden" id="view-balance">
+    <div class="container">
+      <div class="balance-progress" id="balance-progress">1 / 25</div>
+      <div class="balance-cards">
+        <div class="balance-card" id="balance-a" data-side="a">A</div>
+        <div class="balance-vs">VS</div>
+        <div class="balance-card" id="balance-b" data-side="b">B</div>
+      </div>
+      <button class="generate-btn" id="balance-next">다음 질문 →</button>
+    </div>
+  </div>
+
+  <!-- ===== 초성 퀴즈 뷰 ===== -->
+  <div class="game-view hidden" id="view-quiz">
+    <div class="container">
+      <div class="quiz-progress" id="quiz-progress">1 / 25</div>
+      <div class="quiz-card">
+        <div class="quiz-consonants" id="quiz-consonants">ㅊㅋ</div>
+        <div class="quiz-timer-bar"><div class="quiz-timer-fill" id="quiz-timer-fill"></div></div>
+        <div class="quiz-hint hidden" id="quiz-hint"></div>
+        <div class="quiz-answer hidden" id="quiz-answer"></div>
+      </div>
+      <div class="quiz-actions" id="quiz-actions">
+        <button class="secondary-btn" id="quiz-hint-btn">💡 힌트</button>
+        <button class="generate-btn" id="quiz-reveal-btn">정답 보기</button>
+      </div>
+      <button class="generate-btn hidden" id="quiz-next-btn">다음 문제 →</button>
     </div>
   </div>
 
@@ -102,12 +147,16 @@
     // ==================== 게임 관리 ====================
     const GAMES = {
       icebreaker: { title: '💬 아이스브레이킹', theme: 'meeting-theme' },
-      ladder:     { title: '🪜 사다리타기',     theme: 'ladder-theme'  }
+      ladder:     { title: '🪜 사다리타기',     theme: 'ladder-theme'  },
+      balance:    { title: '⚖️ 밸런스 게임',    theme: 'balance-theme' },
+      quiz:       { title: '🔤 초성 퀴즈',      theme: 'quiz-theme'    }
     };
     let currentGame = 'icebreaker';
 
     function switchGame(name) {
       if (name === currentGame) { closeMenu(); return; }
+      // 퀴즈 타이머 정지
+      if (currentGame === 'quiz') clearInterval(quizTimer);
       document.querySelectorAll('.game-view').forEach(v => v.classList.add('hidden'));
       document.getElementById(`view-${name}`).classList.remove('hidden');
       document.getElementById('nav-title').textContent = GAMES[name].title;
@@ -115,6 +164,9 @@
       document.querySelectorAll('.game-card').forEach(c => c.classList.toggle('active', c.dataset.game === name));
       currentGame = name;
       closeMenu();
+      // 게임별 초기화
+      if (name === 'balance') startBalance();
+      if (name === 'quiz') startQuiz();
     }
 
     // 메뉴 열기/닫기
@@ -374,6 +426,138 @@
     function clip(str, max) {
       return str.length > max ? str.slice(0, max) + '..' : str;
     }
+
+    // ==================== 밸런스 게임 ====================
+    let balanceQuestions = [];
+    let balanceQueue = [];
+    let balanceCurrent = 0;
+
+    async function loadBalance() {
+      try {
+        const res = await fetch('../content/balance.json');
+        balanceQuestions = await res.json();
+      } catch (e) { console.error('balance.json 로딩 실패', e); }
+    }
+
+    function startBalance() {
+      balanceQueue = [...balanceQuestions].sort(() => Math.random() - 0.5);
+      balanceCurrent = 0;
+      showBalanceQuestion();
+    }
+
+    function showBalanceQuestion() {
+      if (balanceCurrent >= balanceQueue.length) {
+        balanceCurrent = 0;
+        balanceQueue = [...balanceQueue].sort(() => Math.random() - 0.5);
+      }
+      const q = balanceQueue[balanceCurrent];
+      document.getElementById('balance-a').textContent = q.a;
+      document.getElementById('balance-b').textContent = q.b;
+      document.getElementById('balance-a').classList.remove('selected');
+      document.getElementById('balance-b').classList.remove('selected');
+      document.getElementById('balance-progress').textContent =
+        `${balanceCurrent + 1} / ${balanceQueue.length}`;
+    }
+
+    document.getElementById('balance-a').addEventListener('click', function () {
+      document.getElementById('balance-b').classList.remove('selected');
+      this.classList.toggle('selected');
+    });
+    document.getElementById('balance-b').addEventListener('click', function () {
+      document.getElementById('balance-a').classList.remove('selected');
+      this.classList.toggle('selected');
+    });
+    document.getElementById('balance-next').addEventListener('click', () => {
+      balanceCurrent++;
+      showBalanceQuestion();
+    });
+
+    loadBalance();
+
+    // ==================== 초성 퀴즈 ====================
+    let quizQuestions = [];
+    let quizQueue = [];
+    let quizCurrent = 0;
+    let quizTimer = null;
+    let quizTimeLeft = 10;
+    const QUIZ_TIME = 10;
+
+    async function loadQuiz() {
+      try {
+        const res = await fetch('../content/consonants.json');
+        quizQuestions = await res.json();
+      } catch (e) { console.error('consonants.json 로딩 실패', e); }
+    }
+
+    function startQuiz() {
+      quizQueue = [...quizQuestions].sort(() => Math.random() - 0.5);
+      quizCurrent = 0;
+      showQuizQuestion();
+    }
+
+    function showQuizQuestion() {
+      if (quizCurrent >= quizQueue.length) {
+        quizCurrent = 0;
+        quizQueue = [...quizQueue].sort(() => Math.random() - 0.5);
+      }
+      const q = quizQueue[quizCurrent];
+      document.getElementById('quiz-consonants').textContent = q.consonants;
+      document.getElementById('quiz-hint').textContent = q.hint;
+      document.getElementById('quiz-hint').classList.add('hidden');
+      document.getElementById('quiz-answer').textContent = q.answer;
+      document.getElementById('quiz-answer').classList.add('hidden');
+      document.getElementById('quiz-actions').classList.remove('hidden');
+      document.getElementById('quiz-next-btn').classList.add('hidden');
+      document.getElementById('quiz-progress').textContent =
+        `${quizCurrent + 1} / ${quizQueue.length}`;
+      startQuizTimer();
+    }
+
+    function startQuizTimer() {
+      clearInterval(quizTimer);
+      quizTimeLeft = QUIZ_TIME;
+      updateTimerBar();
+      quizTimer = setInterval(() => {
+        quizTimeLeft -= 0.1;
+        updateTimerBar();
+        if (quizTimeLeft <= 0) revealQuizAnswer();
+      }, 100);
+    }
+
+    function updateTimerBar() {
+      const pct = Math.max(0, quizTimeLeft / QUIZ_TIME * 100);
+      document.getElementById('quiz-timer-fill').style.width = pct + '%';
+    }
+
+    function revealQuizAnswer() {
+      clearInterval(quizTimer);
+      document.getElementById('quiz-timer-fill').style.width = '0%';
+      document.getElementById('quiz-answer').classList.remove('hidden');
+      document.getElementById('quiz-actions').classList.add('hidden');
+      document.getElementById('quiz-next-btn').classList.remove('hidden');
+    }
+
+    document.getElementById('quiz-hint-btn').addEventListener('click', () => {
+      document.getElementById('quiz-hint').classList.remove('hidden');
+    });
+    document.getElementById('quiz-reveal-btn').addEventListener('click', revealQuizAnswer);
+    document.getElementById('quiz-next-btn').addEventListener('click', () => {
+      quizCurrent++;
+      showQuizQuestion();
+    });
+
+    loadQuiz();
+
+    // 게임 전환 시 초성 퀴즈 타이머 정리
+    const _origSwitchGame = switchGame;
+    // switchGame 에서 quiz 외 게임으로 이동하면 타이머 정지
+    document.querySelectorAll('.game-card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.dataset.game !== 'quiz') clearInterval(quizTimer);
+        if (card.dataset.game === 'balance') startBalance();
+        if (card.dataset.game === 'quiz') startQuiz();
+      });
+    });
   </script>
 </body>
 </html>
