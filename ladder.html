@@ -43,7 +43,7 @@
   <nav class="page-nav">
     <a href="index.html" class="back-btn">← 홈</a>
     <span class="page-nav-title">🪜 사다리타기</span>
-    <div class="nav-spacer"></div>
+    <button class="share-btn" id="share-btn">🔗 공유</button>
   </nav>
 
   <main class="game-page top-align">
@@ -85,6 +85,16 @@
     </div>
   </main>
 
+  <section class="situations-section">
+    <h2>이런 상황에서 활용해보세요</h2>
+    <div class="situations-grid">
+      <div class="situation-card"><span class="sit-icon">🍕</span><span class="sit-text">메뉴 결정 못할 때</span></div>
+      <div class="situation-card"><span class="sit-icon">🎯</span><span class="sit-text">당번 정하기</span></div>
+      <div class="situation-card"><span class="sit-icon">🎁</span><span class="sit-text">선물 추첨</span></div>
+      <div class="situation-card"><span class="sit-icon">💪</span><span class="sit-text">내기 결판</span></div>
+    </div>
+  </section>
+
   <section class="other-games">
     <h2>다른 게임도 해보세요</h2>
     <div class="other-games-list">
@@ -93,6 +103,8 @@
       <a href="quiz.html"       class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
     </div>
   </section>
+
+  <div class="toast" id="toast">🔗 링크가 복사되었어요!</div>
 
   <script>
     const playerRows = document.getElementById('player-rows');
@@ -277,16 +289,16 @@
     function clip(str, max) {
       return str.length > max ? str.slice(0, max) + '..' : str;
     }
+
+    document.getElementById('share-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+      });
+    });
   </script>
 
-  <section class="other-games">
-    <h2>다른 게임도 해보세요</h2>
-    <div class="other-games-list">
-      <a href="icebreaker.html" class="other-game-link"><span>💬</span><span>아이스브레이킹</span></a>
-      <a href="balance.html"    class="other-game-link"><span>⚖️</span><span>밸런스 게임</span></a>
-      <a href="quiz.html"       class="other-game-link"><span>🔤</span><span>초성 퀴즈</span></a>
-    </div>
-  </section>
   <footer class="home-footer">
     <p>© 2025 미니게임 허브 · <a href="privacy.html">개인정보처리방침</a></p>
   </footer>

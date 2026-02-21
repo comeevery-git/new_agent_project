@@ -43,7 +43,7 @@
   <nav class="page-nav">
     <a href="index.html" class="back-btn">← 홈</a>
     <span class="page-nav-title">🔤 초성 퀴즈</span>
-    <div class="nav-spacer"></div>
+    <button class="share-btn" id="share-btn">🔗 공유</button>
   </nav>
 
   <main class="game-page">
@@ -65,6 +65,16 @@
     </div>
   </main>
 
+  <section class="situations-section">
+    <h2>이런 상황에서 활용해보세요</h2>
+    <div class="situations-grid">
+      <div class="situation-card"><span class="sit-icon">🏆</span><span class="sit-text">친구와 대결</span></div>
+      <div class="situation-card"><span class="sit-icon">🚌</span><span class="sit-text">이동 중 심심할 때</span></div>
+      <div class="situation-card"><span class="sit-icon">👨‍👩‍👧</span><span class="sit-text">전 연령 함께</span></div>
+      <div class="situation-card"><span class="sit-icon">🍻</span><span class="sit-text">모임 분위기 메이커</span></div>
+    </div>
+  </section>
+
   <section class="other-games">
     <h2>다른 게임도 해보세요</h2>
     <div class="other-games-list">
@@ -76,6 +86,8 @@
   <footer class="home-footer">
     <p>© 2025 미니게임 허브 · <a href="privacy.html">개인정보처리방침</a></p>
   </footer>
+
+  <div class="toast" id="toast">🔗 링크가 복사되었어요!</div>
 
   <script>
     let questions = [];
@@ -141,6 +153,14 @@
     document.getElementById('quiz-next-btn').addEventListener('click', () => { current++; show(); });
 
     load();
+
+    document.getElementById('share-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const t = document.getElementById('toast');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+      });
+    });
   </script>
 </body>
 </html>

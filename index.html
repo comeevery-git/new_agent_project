@@ -40,6 +40,7 @@
   <header class="home-header">
     <h1 class="home-title">🎮 미니게임 허브</h1>
     <p class="home-subtitle">친구, 가족, 동료와 함께<br>어디서든 즐기는 무료 미니게임</p>
+    <p class="home-rotating-text" id="home-rotating-text"></p>
   </header>
 
   <main class="home-main">
@@ -84,5 +85,30 @@
     <p>© 2025 미니게임 허브 · <a href="privacy.html">개인정보처리방침</a></p>
   </footer>
 
+  <div class="toast" id="toast">🔗 링크가 복사되었어요!</div>
+
+  <script>
+    const messages = [
+      '💡 어색한 첫 만남? 아이스브레이킹으로 2분 만에 분위기 전환',
+      '⚖️ 치킨 vs 피자, 진짜 내 취향은 뭘까?',
+      '🔤 초성만 보고 3초 안에 맞춰봐!',
+      '🪜 오늘 메뉴 고민된다면 사다리에 맡겨봐',
+      '🎮 설치 없이 바로 플레이 — 지금 시작하세요',
+    ];
+    let idx = 0;
+    const el = document.getElementById('home-rotating-text');
+
+    function rotate() {
+      el.classList.add('fade-out');
+      setTimeout(() => {
+        idx = (idx + 1) % messages.length;
+        el.textContent = messages[idx];
+        el.classList.remove('fade-out');
+      }, 380);
+    }
+
+    el.textContent = messages[0];
+    setInterval(rotate, 3500);
+  </script>
 </body>
 </html>
