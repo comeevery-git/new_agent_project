@@ -793,6 +793,47 @@ body {
 /* ==================== 유틸리티 ==================== */
 .hidden { display: none !important; }
 
+/* ==================== 반응형 ==================== */
+@media (min-width: 600px) {
+  .games-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .home-header {
+    padding: 60px 20px 32px;
+  }
+
+  .home-title {
+    font-size: 2.6rem;
+  }
+
+  .balance-card {
+    font-size: 1.5rem;
+    padding: 36px 28px;
+  }
+
+  .quiz-consonants {
+    font-size: 3.8rem;
+    letter-spacing: 18px;
+  }
+}
+
+@media (min-width: 900px) {
+  .home-main {
+    max-width: 640px;
+  }
+
+  .game-page {
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 520px;
+  }
+}
+
 /* ==================== 애니메이션 ==================== */
 .fade-in {
   animation: fadeIn 0.5s ease;
